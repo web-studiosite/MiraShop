@@ -162,16 +162,26 @@ function openModal(product) {
   document.getElementById("modalImage").alt = product.name;
   document.getElementById("modalImage").onerror = function(){ this.src=`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect fill="%23f5f5f5" width="300" height="400"/><text x="150" y="200" text-anchor="middle" fill="%23a3a3a3" font-family="sans-serif" font-size="14">${encodeURIComponent(product.name)}</text></svg>`; };
 
-  // Thumbs
-  const thumbsEl = document.getElementById("modalThumbs");
-  thumbsEl.innerHTML = product.images.map((img,i) => `<img src="${img}" alt="thumb" class="${i===0?'active':''}" data-idx="${i}" onerror="this.style.display='none'">`).join("");
-  thumbsEl.querySelectorAll("img").forEach(t => {
-    t.addEventListener("click", () => {
-      document.getElementById("modalImage").src = product.images[t.dataset.idx];
-      thumbsEl.querySelectorAll("img").forEach(x=>x.classList.remove("active"));
-      t.classList.add("active");
-    });
+  // // Limpa eventos antigos
+const thumbsContainer = document.getElementById("modalThumbs");
+thumbsContainer.innerHTML = "";
+
+// Adiciona novas thumbs
+product.images.forEach((img, i) => {
+  const thumb = document.createElement("img");
+  thumb.src = img;
+  thumb.alt = "thumb";
+  thumb.dataset.idx = i;
+  thumb.className = i === 0 ? "active" : "";
+  thumb.onerror = () => { thumb.style.display = "none"; };
+  thumb.addEventListener("click", () => {
+    document.getElementById("modalImage").src = product.images[i];
+    // Remove classe active de todas
+    document.querySelectorAll("#modalThumbs img").forEach(x => x.classList.remove("active"));
+    thumb.classList.add("active");
   });
+  thumbsContainer.appendChild(thumb);
+});
 
   // Colors
   const colorsEl = document.getElementById("modalColors");
